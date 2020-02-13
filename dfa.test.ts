@@ -64,4 +64,17 @@ testGroup('NFA Tests', () => {
     test('Accept 011', () => nfa.run('011'));
     test('Accept 0110', () => nfa.run('0110'));
     test('Accept 01101', () => nfa.run('01101'));
+    test('Accept 011111111111', () => nfa.run('011111111111'));
+    const paths = new NFA(
+        new Set(['a', 'b', 'c', 'd', 'e', 'f']),
+        new Set(['0']),
+        new Map([
+            ['a', new Map([
+                ['0', new Set(['b', 'c', 'd', 'e', 'f'])]
+            ])]
+        ]),
+        'a',
+        new Set(['f'])
+    );
+    test('Accept 1 Non-deterministic Path', () => paths.run('0'));
 });

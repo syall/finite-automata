@@ -38,9 +38,9 @@ export class DFA {
         for (const c of src)
             if (!this.a.has(c))
                 return false;
-            else if (!this.d.get(s).get(c))
+            else if (this.d.get(s) && !this.d.get(s).get(c))
                 return false;
-            else s = this.d.get(s).get(c);
+            else if (this.d.get(s)) s = this.d.get(s).get(c);
         return this.f.has(s);
     }
 
@@ -94,8 +94,7 @@ export class NFA {
     private nullTransitions(ss: Set<string>): Set<string> {
         const visited: Set<string> = new Set();
         let newSS: Set<string> = new Set();
-        for (const s of ss)
-            newSS = this.dfsNull(s, visited);
+        for (const s of ss) newSS = this.dfsNull(s, visited);
         newSS = new Set([...ss, ...newSS]);
         return newSS;
     }
@@ -104,10 +103,10 @@ export class NFA {
         if (visited.has(s))
             return new Set();
         else visited.add(s);
-        if (!this.d.get(s).get(''))
+        if (this.d.get(s) && !this.d.get(s).get(''))
             return new Set([s]);
         let ret = new Set([s]);
-        for (const f of this.d.get(s).get(''))
+        if (this.d.get(s)) for (const f of this.d.get(s).get(''))
             ret = new Set([...ret, ...this.dfsNull(f, visited)]);
         return ret;
     }
@@ -117,8 +116,8 @@ export class NFA {
         let newSS: Set<string> = new Set();
         for (const s of ss)
             if (!this.a.has(c)) continue;
-            else if (!this.d.get(s).get(c)) continue;
-            else for (const n of this.d.get(s).get(c))
+            else if (this.d.get(s) && !this.d.get(s).get(c)) continue;
+            else if (this.d.get(s)) for (const n of this.d.get(s).get(c))
                 newSS.add(n);
         return newSS;
     }

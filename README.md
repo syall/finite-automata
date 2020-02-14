@@ -2,7 +2,7 @@
 
 ## Overview
 
-finite-automata is an Class Interface to build both Deterministic (DFA) and Nondeterministic (NFA) Finite Automata for Strings which are iterated through by character.
+**finite-automata** is an Class Interface to build both Deterministic (DFA) and Nondeterministic (NFA) Finite Automata for Strings which are iterated through by character.
 
 The Class Structures are based on the definitions found in [Michael Sipser's Introduction to the Theory of Computation](http://math.mit.edu/~sipser/book.html), in which the following are defined:
 
@@ -39,13 +39,13 @@ Both are ES6 Classes, interfaced in two ways:
 * `instance = new constructor(q, a, s, d, f)` in which there is code that validates that the arguments passed in are valid for a finite automaton, otherwise throwing an `Error`
 * `instance.run(input)` in which an `input` string is iterated by character, returning `true` if the input is accepted or `false` otherwise
 
-Once a Automaton is created, it is recommended not to alter the existing properties of the object, as there is no guarantee that the constraints of the Automaton would be valid afterwards.
+Once a Automaton is created, it is recommended **not** to alter the existing properties of the object, as there is no guarantee that the constraints of the Automaton would be valid afterwards.
 
 ### dfa.ts
 
 In the [definition](#deterministic-finite-automaton), the class implementations are:
 
-Definition | Class | type
+Definition | Class | Type
 ----------|-------|----------------------------------------------
 Q         | q     | Set of Strings
 Σ         | a     | Set of Strings
@@ -101,8 +101,8 @@ console.log(dfa.run('111'))            // Expect false
 
 In the [definition](#nondeterministic-finite-automaton), the class implementations are:
 
-Definition | Class | type
----       | ---   | ---
+Definition | Class | Type
+----------|-------|----------------------------------------------------
 Q         | q     | Set of Strings
 Σ         | a     | Set of Strings
 δ         | d     | Map of String => (Map of String => Set of Strings)
@@ -167,11 +167,9 @@ console.log(nfa.run('b'))  // Expect true
 console.log(nfa.run('ab')) // Expect false
 ```
 
-## Personal Notes
+## Development
 
-### Development
-
-#### deno
+### deno
 
 For this project, I used TypeScript on the [deno](https://deno.land/) runtime.
 
@@ -179,29 +177,27 @@ And my experience with deno was great!
 
 Especially as a person new to TypeScript, having built-in TypeScript Support was a huge benefit as I did not have to configure any confusing compilation steps or install any other dependencies.
 
-Not only this, in tangent with Visual Studio Code's first class support for TypeScript, the process to adopt was seemless.
-
-I primary use Node.js and have had some suspicions on the structure, following the same ideas as [Ryan Dahl's concerns about Node.js](https://www.youtube.com/watch?v=M3BM9TB-8yA) (I should not be able to rewrite my whole computer without any permission checks just because of a bug).
+Not only this, the process to adopt was seemless with Visual Studio Code's first class support for TypeScript.
 
 I also had some concerns that deno would be slower than Node.js because of the built-in TypeScript support.
 
-However, the command line is explicit on whether compilation occurs and the code that I wrote in this project had no speed difference.
+However, the command line is explicit on when compilation occurs and the code that I wrote in this project had no speed difference.
 
 ```bash
-# Outputs file that is compiled!
+# File is compiled once...
 $ deno nfa.test.ts
-Compile file:///Users/stevenyuan/Work/Current/finite-automata/nfa.test.ts
+Compile file:///path/to/finite-automata/nfa.test.ts
 ...
-# No compilation if no changes are done!
+# Running it again with no changes: No compilation!
 $ deno nfa.test.ts
 ...
 ```
 
-#### Testing
+### Testing
 
 I wrote [two functions in test.ts](https://github.com/syall/finite-automata/blob/master/test.ts) that look similar to Jest's API that are surprisingly simple to implement.
 
-Although I do not have the comparison functions or any complex compatibility with existing frameworks, the structure of the tests organizes the tests well with a decent output.
+Although I do not have the comparison functions or any complex compatibility with existing frameworks, the structure organizes the code well with a decent output.
 
 ```bash
 $ deno nfa.test.ts
@@ -217,13 +213,13 @@ NFA Tests
   ✓ Accept 1 Non-deterministic Path
 ```
 
-#### Null Transitions
+### Null Transitions
 
 For the NFA Class, one of the challenges I had to tackle was the implementation of null transitions.
 
-Before every transition, the set of possible states that an input could be must include any states that can be reached with a null transition, and any states that can be reached with a null transition from those states..., etc.
+Before every transition, the set of possible states that an input could be in must include any states that can be reached with a null transition, and any states that can be reached with a null transition from those states, and again, and again.
 
-I realized that this would require state traversal of the finite automaton, so I decided to implement a depth-first search to reach all of the possible states.
+I realized that this would require state traversal of the finite automaton, so I decided to implement a depth-first search to reach all of the possible states given the null transitions.
 
 However, even after a successful implementation of DFS, some test cases still failed although I expected it to pass!
 
@@ -247,25 +243,25 @@ End Run
 
 One Combination that works is 1 and 3, calculating the null transitions before the first Iteration (1) so the transitions are calculated before the first Transition as well as recalculating null transitions before the next Iteration (3).
 
-Another Combination is 2 and 4, calculating the null transitions just before the first Transition (2) in the first Iteration, but required to find the null transitions before returning the final values (4) as the last Iteration does not calculate the null transitions.
+Another Combination is 2 and 4, calculating the null transitions just before the first Transition (2) in the first Iteration but required to find the null transitions before returning the final values (4) as the last Iteration does not calculate the null transitions.
 
 In this case, I arbitrarily chose the second combination, although the first combination seems semantically more sensible since the start states in the second combination do not reflect the actual start states with null transitions, but with the user defined one.
 
-### Reflection
+## Reflection
 
 The theory that a machine with such simple rules for construction can perform complex computations is remarkable.
 
-Not only this, there are aspects that strikes a resemblance to functional programming, especially using Thompson's Constructions to use premade automata as building blocks.
+Not only this, there are aspects that strike a resemblance to functional programming, especially using Thompson's Constructions to use premade automata as building blocks.
 
-Even more, adding in nondeterminism adds in concepts similar to logical programming, particularly the Prolog Language evaluation.
+Even more, adding in nondeterminism adds in concepts similar to logical programming, particularly Prolog evaluation.
 
 Althogh the implementation here is not very useful as it only deals with a specific class of automata (string by character), the framework could be used as a basis for an even higher level abstraction.
 
-For Spring Semester 2020, I am enrolled in Formal Languages and Automata (01:198:452) at Rutgers University where I thought the main focus would be on Formal Languages and Automata but, to my surprise, most of it are focused on Complexity Analysis.
+For Spring Semester 2020, I am enrolled in Formal Languages and Automata (01:198:452) at Rutgers University where I thought the main focus would be on Formal Languages and Automata but, to my surprise, most of it is supposedfly focused on Complexity Analysis.
 
 However, this does not mean the topic is not delved into.
 
-At only 4 weeks in, I could not understand most of the topics covered in the proofs, leading to my frustration in just implementing the finite automata.
+At only 4 weeks in, I can not understand most of the topics covered in the proofs, leading to my frustration in just implementing the finite automata.
 
 If you want a taste of what I am studying, try reading some excerpts from [Michael Sipser's Introduction to the Theory of Computation](http://math.mit.edu/~sipser/book.html).
 

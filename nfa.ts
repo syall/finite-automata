@@ -43,12 +43,24 @@ export class NFA {
         return false;
     }
 
+    private transitions(ss: Set<string>, c: string): Set<string> {
+        ss = this.nullTransitions(ss);
+        let newSS: Set<string> = new Set();
+        for (const s of ss)
+            if (!this.a.has(c)) continue;
+            else if (this.d.get(s) && !this.d.get(s).get(c)) continue;
+            else if (this.d.get(s)) for (const n of this.d.get(s).get(c))
+                newSS.add(n);
+        return newSS;
+    }
+
     private nullTransitions(ss: Set<string>): Set<string> {
         const visited: Set<string> = new Set();
         let newSS: Set<string> = new Set();
-        for (const s of ss) newSS = this.dfsNull(s, visited);
-        newSS = new Set([...ss, ...newSS]);
-        return newSS;
+        for (const s of ss) newSS = new Set([
+            ...newSS, ...this.dfsNull(s, visited)
+        ]);
+        return new Set([...ss, ...newSS]);
     }
 
     private dfsNull(s: string, visited: Set<string>): Set<string> {
@@ -61,17 +73,6 @@ export class NFA {
         if (this.d.get(s)) for (const f of this.d.get(s).get(''))
             ret = new Set([...ret, ...this.dfsNull(f, visited)]);
         return ret;
-    }
-
-    private transitions(ss: Set<string>, c: string): Set<string> {
-        ss = this.nullTransitions(ss);
-        let newSS: Set<string> = new Set();
-        for (const s of ss)
-            if (!this.a.has(c)) continue;
-            else if (this.d.get(s) && !this.d.get(s).get(c)) continue;
-            else if (this.d.get(s)) for (const n of this.d.get(s).get(c))
-                newSS.add(n);
-        return newSS;
     }
 
 }

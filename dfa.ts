@@ -13,18 +13,25 @@ export class DFA {
         s: string,
         f: Set<string>
     ) {
-        if (!q.has(s))
+        // Verification of Input
+        if (!q.has(s)) {
             throw new Error(`Accept State ${s} not in ${[...q]}`);
-        for (const c of f) if (!q.has(c))
+        }
+        for (const c of f) if (!q.has(c)) {
             throw new Error(`Final State ${c} not in ${[...q]}`);
-        for (const [ok, ov] of d)
-            if (!q.has(ok))
-                throw new Error(`Delta Start State ${ok} not in ${[...q]}`);
-            else for (const [k, v] of ov)
-                if (!a.has(k))
-                    throw new Error(`Delta Input ${k} not in ${[...a]}`);
-                else if (!q.has(v))
-                    throw new Error(`Delta End State ${v} not in ${[...q]}`);
+        }
+        for (const [start, transitions] of d) {
+            if (!q.has(start)) {
+                throw new Error(`Delta Start State ${start} not in ${[...q]}`);
+            }
+            for (const [input, next] of transitions) {
+                if (!a.has(input)) {
+                    throw new Error(`Delta Input ${input} not in ${[...a]}`);
+                } else if (!q.has(next)) {
+                    throw new Error(`Delta End State ${next} not in ${[...q]}`);
+                }
+            }
+        }
 
         this.q = q;
         this.a = a;
@@ -34,13 +41,17 @@ export class DFA {
     }
 
     public run(src: string): boolean {
+        // Run Transitions
         let s = this.s;
-        for (const c of src)
-            if (!this.a.has(c))
+        for (const c of src) {
+            if (!this.a.has(c)) {
                 return false;
-            else if (this.d.get(s) && !this.d.get(s).get(c))
+            } else if (this.d.get(s) && !this.d.get(s).get(c)) {
                 return false;
-            else if (this.d.get(s)) s = this.d.get(s).get(c);
+            } else if (this.d.get(s)) {
+                s = this.d.get(s).get(c);
+            }
+        }
         return this.f.has(s);
     }
 
